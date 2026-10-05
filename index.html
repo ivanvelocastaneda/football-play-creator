@@ -6,47 +6,77 @@
 <title>Football Play Creator</title>
 <style>
 * { box-sizing: border-box; }
-body { margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f5f5f5; }
-.container { display: flex; flex-direction: column; height: 100vh; }
-.toolbar { padding: 12px; border-bottom: 1px solid #ddd; display: flex; gap: 8px; flex-wrap: wrap; background: #fff; font-size: 12px; }
-.toolbar button, .toolbar select { padding: 6px 12px; border: 1px solid #ddd; background: #fff; border-radius: 6px; cursor: pointer; font-size: 12px; }
+html, body { margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f5f5f5; width: 100%; height: 100%; }
+.container { display: flex; flex-direction: column; height: 100vh; width: 100%; }
+.toolbar { padding: 12px; border-bottom: 1px solid #ddd; display: flex; gap: 8px; flex-wrap: wrap; background: #f0f0f0; font-size: 14px; align-items: center; }
+.toolbar button, .toolbar select { padding: 10px 14px; border: 1px solid #ddd; background: #fff; border-radius: 6px; cursor: pointer; font-size: 14px; min-height: 44px; touch-action: manipulation; }
+.toolbar button:hover { background: #f0f0f0; }
 .toolbar button.active { background: #4a90e2; color: white; border-color: #4a90e2; }
-.mode-group { display: flex; gap: 4px; border: 1px solid #ddd; border-radius: 6px; background: #f9f9f9; padding: 2px; }
-.mode-group button { border: none; background: transparent; padding: 4px 10px; font-size: 11px; border-radius: 4px; }
-.mode-group button.active { background: #4a90e2; color: white; }
-.field-container { flex: 1; display: flex; align-items: center; justify-content: center; padding: 12px; overflow: auto; background: #f5f5f5; }
-svg#field { max-width: 100%; max-height: 100%; background: #1a5f1a; border: 2px solid #333; }
-.controls { padding: 12px; border-top: 1px solid #ddd; background: #fff; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; font-size: 12px; }
+.mode-buttons { display: flex; gap: 4px; border-right: 1px solid #ddd; padding-right: 12px; }
+.divider { width: 1px; background: #ddd; height: 30px; }
+@media (max-width: 600px) {
+  .toolbar { padding: 8px; gap: 6px; }
+  .toolbar button, .toolbar select { padding: 10px 12px; font-size: 13px; min-height: 40px; }
+  .mode-buttons { gap: 2px; }
+}
+.toolbar button.active { background: #4a90e2; color: white; border-color: #4a90e2; }
+.field-container { flex: 1; display: flex; align-items: center; justify-content: center; padding: 8px; overflow: auto; background: #f5f5f5; }
+svg#field { max-width: 100%; max-height: 100%; background: #1a5f1a; border: 2px solid #333; touch-action: none; user-select: none; }
+.controls { padding: 10px; border-top: 1px solid #ddd; background: #fff; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; font-size: 13px; }
+.controls button { min-height: 40px; padding: 8px 12px; }
 .slider-group { display: flex; gap: 6px; align-items: center; }
-input[type="range"] { width: 80px; }
-.info-panel { padding: 12px; border-top: 1px solid #ddd; background: #f9f9f9; font-size: 12px; }
+input[type="range"] { width: 100px; height: 28px; }
+.info-panel { padding: 12px; border-top: 1px solid #ddd; background: #f9f9f9; font-size: 13px; min-height: auto; }
+.hidden { display: none !important; }
+.section { display: flex; gap: 12px; align-items: center; }
 </style>
 </head>
 <body>
 
 <div class="container">
   <div class="toolbar">
-    <div class="mode-group">
-      <button id="modeOffense" class="active">Offense</button>
-      <button id="modeDefense">Defense</button>
+    <!-- Mode buttons -->
+    <div class="mode-buttons">
+      <button class="mode-btn active" data-mode="offense">Edit Offense</button>
+      <button class="mode-btn" data-mode="defense">Edit Defense</button>
+      <button class="mode-btn" data-mode="play">Play</button>
     </div>
-    <select id="formation">
-      <option value="shotgun">Shotgun 5WR</option>
-      <option value="iform">I-Form</option>
-      <option value="singleback">Singleback</option>
-      <option value="empty">Empty Set</option>
-    </select>
-    <select id="defense" style="display: none;">
-      <option value="cover2">Cover 2</option>
-      <option value="cover3">Cover 3</option>
-      <option value="nickel">Nickel</option>
-      <option value="dime">Dime</option>
-      <option value="blitz">Blitz</option>
-    </select>
-    <button id="resetBtn">Reset</button>
-    <button id="playBtn" class="active">Play</button>
-    <button id="exportBtn">Save</button>
-    <button id="importBtn">Load</button>
+    <div class="divider"></div>
+
+    <!-- Offense controls -->
+    <div class="section" id="offenseSection">
+      <button id="offenseQBBtn" class="position-btn" data-position="QB">+ QB</button>
+      <button id="offenseWRBtn" class="position-btn" data-position="WR">+ WR</button>
+      <button id="offenseRBBtn" class="position-btn" data-position="RB">+ RB</button>
+      <button id="offenseTEBtn" class="position-btn" data-position="TE">+ TE</button>
+      <button id="offenseClearBtn">Clear All</button>
+      <button id="offenseClearRoutesBtn">Clear Routes</button>
+      <button id="exportOffenseBtn">Save</button>
+      <button id="importOffenseBtn">Load</button>
+    </div>
+
+    <!-- Defense controls -->
+    <div class="section hidden" id="defenseSection">
+      <button id="defenseDEBtn" class="position-btn" data-position="DE">+ DE</button>
+      <button id="defenseDTBtn" class="position-btn" data-position="DT">+ DT</button>
+      <button id="defenseLBBtn" class="position-btn" data-position="LB">+ LB</button>
+      <button id="defenseCBBtn" class="position-btn" data-position="CB">+ CB</button>
+      <button id="defenseSBtn" class="position-btn" data-position="S">+ S</button>
+      <button id="defenseClearBtn">Clear All</button>
+      <button id="defenseClearRoutesBtn">Clear Routes</button>
+      <button id="exportDefenseBtn">Save</button>
+      <button id="importDefenseBtn">Load</button>
+    </div>
+
+    <!-- Play controls -->
+    <div class="section hidden" id="playSection">
+      <button id="playBtn">Play</button>
+      <div class="slider-group">
+        <label for="speed">Speed:</label>
+        <input type="range" id="speed" min="0.5" max="2" step="0.1" value="1">
+        <span id="speedValue">1.0x</span>
+      </div>
+    </div>
   </div>
 
   <div class="field-container">
@@ -72,18 +102,8 @@ input[type="range"] { width: 80px; }
     </svg>
   </div>
 
-  <div class="controls">
-    <button id="clearBtn" style="padding: 6px 10px; font-size: 12px; border: 1px solid #ddd; border-radius: 6px; background: #fff; cursor: pointer;">Clear Players</button>
-    <button id="clearRoutesBtn" style="padding: 6px 10px; font-size: 12px; border: 1px solid #ddd; border-radius: 6px; background: #fff; cursor: pointer;">Clear Routes</button>
-    <div class="slider-group">
-      <label for="speed">Speed:</label>
-      <input type="range" id="speed" min="0.5" max="2" step="0.1" value="1">
-    </div>
-    <span id="speedValue">1.0x</span>
-  </div>
-
-  <div class="info-panel">
-    <div id="info"><strong>How to design plays:</strong> Load a formation or start blank. Drag players to position. Click to draw routes. Play to simulate.</div>
+  <div class="info-panel" id="info">
+    <strong>Offense:</strong> Click a position button, then click on the field to place players. Drag to reposition, click to draw routes.
   </div>
 </div>
 
@@ -91,157 +111,79 @@ input[type="range"] { width: 80px; }
 const svg = document.getElementById('field');
 const playersGroup = document.getElementById('players');
 const routesGroup = document.getElementById('routes');
-const formationSelect = document.getElementById('formation');
-const defenseSelect = document.getElementById('defense');
-const modeOffenseBtn = document.getElementById('modeOffense');
-const modeDefenseBtn = document.getElementById('modeDefense');
-const playBtn = document.getElementById('playBtn');
-const resetBtn = document.getElementById('resetBtn');
-const speedSlider = document.getElementById('speed');
-const speedValue = document.getElementById('speedValue');
-const exportBtn = document.getElementById('exportBtn');
-const importBtn = document.getElementById('importBtn');
-const clearBtn = document.getElementById('clearBtn');
-const clearRoutesBtn = document.getElementById('clearRoutesBtn');
 const infoDiv = document.getElementById('info');
 
-let players = [];
-let routes = [];
+let offensePlayers = [];
+let defenseAllayers = [];
+let offenseRoutes = [];
+let defenseRoutes = [];
+let currentMode = 'offense';
 let isSimulating = false;
-let editMode = 'offense';
 let selectedPlayer = null;
 let drawingRoute = null;
-
-const OFFENSIVE_FORMATIONS = {
-  shotgun: [
-    { x: 300, y: 280, role: 'QB', isDefense: false },
-    { x: 200, y: 220, role: 'WR', isDefense: false },
-    { x: 280, y: 200, role: 'WR', isDefense: false },
-    { x: 320, y: 200, role: 'WR', isDefense: false },
-    { x: 400, y: 220, role: 'WR', isDefense: false },
-    { x: 480, y: 240, role: 'WR', isDefense: false }
-  ],
-  iform: [
-    { x: 300, y: 280, role: 'QB', isDefense: false },
-    { x: 300, y: 240, role: 'RB', isDefense: false },
-    { x: 300, y: 210, role: 'RB', isDefense: false },
-    { x: 150, y: 220, role: 'WR', isDefense: false },
-    { x: 450, y: 220, role: 'WR', isDefense: false },
-    { x: 250, y: 210, role: 'TE', isDefense: false }
-  ],
-  singleback: [
-    { x: 300, y: 280, role: 'QB', isDefense: false },
-    { x: 300, y: 240, role: 'RB', isDefense: false },
-    { x: 180, y: 210, role: 'WR', isDefense: false },
-    { x: 300, y: 200, role: 'WR', isDefense: false },
-    { x: 420, y: 210, role: 'WR', isDefense: false },
-    { x: 250, y: 210, role: 'TE', isDefense: false }
-  ],
-  empty: [
-    { x: 300, y: 280, role: 'QB', isDefense: false },
-    { x: 180, y: 210, role: 'WR', isDefense: false },
-    { x: 260, y: 195, role: 'WR', isDefense: false },
-    { x: 340, y: 195, role: 'WR', isDefense: false },
-    { x: 420, y: 210, role: 'WR', isDefense: false },
-    { x: 500, y: 230, role: 'WR', isDefense: false }
-  ]
-};
-
-const DEFENSIVE_FORMATIONS = {
-  cover2: [
-    { x: 100, y: 80, role: 'DE', isDefense: true },
-    { x: 150, y: 100, role: 'DT', isDefense: true },
-    { x: 200, y: 100, role: 'DT', isDefense: true },
-    { x: 250, y: 80, role: 'DE', isDefense: true },
-    { x: 80, y: 140, role: 'LB', isDefense: true },
-    { x: 175, y: 150, role: 'MLB', isDefense: true },
-    { x: 270, y: 140, role: 'LB', isDefense: true },
-    { x: 120, y: 100, role: 'CB', isDefense: true },
-    { x: 230, y: 100, role: 'CB', isDefense: true },
-    { x: 175, y: 120, role: 'S', isDefense: true },
-    { x: 175, y: 160, role: 'S', isDefense: true }
-  ],
-  cover3: [
-    { x: 100, y: 80, role: 'DE', isDefense: true },
-    { x: 150, y: 100, role: 'DT', isDefense: true },
-    { x: 200, y: 100, role: 'DT', isDefense: true },
-    { x: 250, y: 80, role: 'DE', isDefense: true },
-    { x: 80, y: 140, role: 'LB', isDefense: true },
-    { x: 175, y: 150, role: 'MLB', isDefense: true },
-    { x: 270, y: 140, role: 'LB', isDefense: true },
-    { x: 100, y: 110, role: 'CB', isDefense: true },
-    { x: 175, y: 130, role: 'S', isDefense: true },
-    { x: 250, y: 110, role: 'CB', isDefense: true }
-  ],
-  nickel: [
-    { x: 100, y: 90, role: 'DE', isDefense: true },
-    { x: 150, y: 110, role: 'DT', isDefense: true },
-    { x: 250, y: 90, role: 'DE', isDefense: true },
-    { x: 80, y: 150, role: 'LB', isDefense: true },
-    { x: 175, y: 160, role: 'LB', isDefense: true },
-    { x: 270, y: 150, role: 'LB', isDefense: true },
-    { x: 100, y: 110, role: 'CB', isDefense: true },
-    { x: 175, y: 130, role: 'CB', isDefense: true },
-    { x: 250, y: 110, role: 'CB', isDefense: true },
-    { x: 175, y: 150, role: 'S', isDefense: true }
-  ],
-  dime: [
-    { x: 120, y: 100, role: 'DE', isDefense: true },
-    { x: 230, y: 100, role: 'DE', isDefense: true },
-    { x: 80, y: 150, role: 'LB', isDefense: true },
-    { x: 270, y: 150, role: 'LB', isDefense: true },
-    { x: 80, y: 110, role: 'CB', isDefense: true },
-    { x: 140, y: 120, role: 'CB', isDefense: true },
-    { x: 210, y: 120, role: 'CB', isDefense: true },
-    { x: 270, y: 110, role: 'CB', isDefense: true },
-    { x: 140, y: 150, role: 'S', isDefense: true },
-    { x: 210, y: 150, role: 'S', isDefense: true }
-  ],
-  blitz: [
-    { x: 100, y: 80, role: 'DE', isDefense: true },
-    { x: 150, y: 100, role: 'DT', isDefense: true },
-    { x: 200, y: 100, role: 'DT', isDefense: true },
-    { x: 250, y: 80, role: 'DE', isDefense: true },
-    { x: 50, y: 140, role: 'LB', isDefense: true },
-    { x: 175, y: 130, role: 'LB', isDefense: true },
-    { x: 300, y: 140, role: 'LB', isDefense: true },
-    { x: 100, y: 120, role: 'CB', isDefense: true },
-    { x: 250, y: 120, role: 'CB', isDefense: true },
-    { x: 175, y: 160, role: 'S', isDefense: true }
-  ]
-};
+let placementMode = null; // 'QB', 'WR', etc., or null
 
 function createPlayer(x, y, role, isDefense) {
-  players.push({ id: Math.random(), x, y, role, isDefense, startX: x, startY: y, vx: 0, vy: 0 });
+  const player = { id: Math.random(), x, y, role, isDefense, startX: x, startY: y, vx: 0, vy: 0 };
+  if (isDefense) {
+    defenseAllayers.push(player);
+  } else {
+    offensePlayers.push(player);
+  }
+  return player;
+}
+
+function initializeEmptySetFormation() {
+  offensePlayers = [];
+  defenseAllayers = [];
+
+  // Offense empty set - closer to midfield (x around 250-280)
+  createPlayer(250, 180, 'QB', false);
+  createPlayer(280, 120, 'WR', false);
+  createPlayer(280, 145, 'WR', false);
+  createPlayer(280, 170, 'WR', false);
+  createPlayer(280, 195, 'WR', false);
+  createPlayer(280, 220, 'WR', false);
+
+  // Defense formation - closer to midfield, mirrored (x around 320-350)
+  createPlayer(320, 160, 'DE', true);
+  createPlayer(320, 200, 'DE', true);
+  createPlayer(335, 180, 'DT', true);
+  createPlayer(350, 120, 'CB', true);
+  createPlayer(350, 240, 'CB', true);
+  createPlayer(350, 180, 'S', true);
+
+  renderPlayers();
+  renderRoutes();
 }
 
 function renderRoutes() {
   routesGroup.innerHTML = '';
+  const routes = currentMode === 'play' ? [...offenseRoutes, ...defenseRoutes] :
+                 (currentMode === 'offense' ? offenseRoutes : defenseRoutes);
 
-  // Draw all saved routes
   routes.forEach(route => {
+    const isDefense = route.isDefense;
     const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
     line.setAttribute('x1', route.x1);
     line.setAttribute('y1', route.y1);
     line.setAttribute('x2', route.x2);
     line.setAttribute('y2', route.y2);
-    line.setAttribute('stroke', route.isDefense ? '#ff5555' : '#5a9fff');
+    line.setAttribute('stroke', isDefense ? '#ff5555' : '#5a9fff');
     line.setAttribute('stroke-width', 3);
     line.setAttribute('stroke-dasharray', '5,5');
     routesGroup.appendChild(line);
 
-    // Add endpoint circle
     const endpoint = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
     endpoint.setAttribute('cx', route.x2);
     endpoint.setAttribute('cy', route.y2);
     endpoint.setAttribute('r', 6);
     endpoint.setAttribute('fill', 'none');
-    endpoint.setAttribute('stroke', route.isDefense ? '#ff5555' : '#5a9fff');
+    endpoint.setAttribute('stroke', isDefense ? '#ff5555' : '#5a9fff');
     endpoint.setAttribute('stroke-width', 2);
     routesGroup.appendChild(endpoint);
   });
 
-  // Draw currently drawing route with highlight
   if (drawingRoute) {
     const previewLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
     previewLine.setAttribute('x1', drawingRoute.x1);
@@ -258,18 +200,21 @@ function renderRoutes() {
 
 function renderPlayers() {
   playersGroup.innerHTML = '';
-  players.forEach(p => {
-    const isEditable = (editMode === 'offense' && !p.isDefense) || (editMode === 'defense' && p.isDefense);
-    const isBeingRouted = drawingRoute && drawingRoute.playerId === p.id;
+  const players = [...offensePlayers, ...defenseAllayers];
+  const editingTeam = currentMode === 'defense' ? 'defense' : 'offense';
 
-    // Add highlight glow if this player is being routed
+  players.forEach(p => {
+    const isBeingRouted = drawingRoute && drawingRoute.playerId === p.id;
+    const isDefense = p.isDefense;
+    const isEditable = (editingTeam === 'offense' && !isDefense) || (editingTeam === 'defense' && isDefense) || currentMode === 'play';
+
     if (isBeingRouted) {
       const glow = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
       glow.setAttribute('cx', p.x);
       glow.setAttribute('cy', p.y);
       glow.setAttribute('r', 20);
       glow.setAttribute('fill', 'none');
-      glow.setAttribute('stroke', p.isDefense ? '#ff5555' : '#5a9fff');
+      glow.setAttribute('stroke', isDefense ? '#ff5555' : '#5a9fff');
       glow.setAttribute('stroke-width', 2);
       glow.setAttribute('opacity', '0.6');
       glow.setAttribute('stroke-dasharray', '3,3');
@@ -280,12 +225,11 @@ function renderPlayers() {
     circle.setAttribute('cx', p.x);
     circle.setAttribute('cy', p.y);
     circle.setAttribute('r', 12);
-    circle.setAttribute('fill', p.isDefense ? '#ff6b6b' : '#4a90e2');
-    circle.setAttribute('stroke', isBeingRouted ? (p.isDefense ? '#ffff00' : '#ffff00') : 'white');
+    circle.setAttribute('fill', isDefense ? '#ff6b6b' : '#4a90e2');
+    circle.setAttribute('stroke', isBeingRouted ? '#ffff00' : 'white');
     circle.setAttribute('stroke-width', isBeingRouted ? 3 : 1);
-
-    circle.style.opacity = isEditable ? '1' : '0.5';
     circle.style.cursor = isEditable ? 'grab' : 'default';
+    circle.style.opacity = !isEditable && currentMode !== 'play' ? '0.5' : '1';
 
     const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
     text.setAttribute('x', p.x);
@@ -310,43 +254,64 @@ function renderPlayers() {
 
     playersGroup.appendChild(group);
   });
+
+  // Update cursor based on placement mode
+  if (placementMode) {
+    svg.style.cursor = 'crosshair';
+  } else {
+    svg.style.cursor = 'default';
+  }
 }
 
 function handleDragStart(e, playerId) {
+  e.preventDefault();
+  const players = [...offensePlayers, ...defenseAllayers];
   selectedPlayer = players.find(p => p.id === playerId);
   if (!selectedPlayer) return;
 
   const rect = svg.getBoundingClientRect();
-  const startX = e.clientX || e.touches[0].clientX;
-  const startY = e.clientY || e.touches[0].clientY;
+  const touch = e.touches ? e.touches[0] : e;
+  const startX = touch.clientX;
+  const startY = touch.clientY;
   let hasMoved = false;
 
-  const offsetX = startX - rect.left - selectedPlayer.x;
-  const offsetY = startY - rect.top - selectedPlayer.y;
+  const scaleX = 600 / rect.width;
+  const scaleY = 360 / rect.height;
+
+  const offsetX = (startX - rect.left) * scaleX - selectedPlayer.x;
+  const offsetY = (startY - rect.top) * scaleY - selectedPlayer.y;
 
   function handleMove(e) {
-    const clientX = e.clientX || e.touches[0].clientX;
-    const clientY = e.clientY || e.touches[0].clientY;
+    e.preventDefault();
+    const touch = e.touches ? e.touches[0] : e;
+    const clientX = touch.clientX;
+    const clientY = touch.clientY;
 
-    // Check if user actually moved the mouse significantly
     if (Math.abs(clientX - startX) > 5 || Math.abs(clientY - startY) > 5) {
       hasMoved = true;
     }
 
     if (hasMoved) {
-      selectedPlayer.x = Math.max(0, Math.min(600, clientX - rect.left - offsetX));
-      selectedPlayer.y = Math.max(0, Math.min(360, clientY - rect.top - offsetY));
+      const x = (clientX - rect.left) * scaleX - offsetX;
+      const y = (clientY - rect.top) * scaleY - offsetY;
+      selectedPlayer.x = Math.max(0, Math.min(600, x));
+      selectedPlayer.y = Math.max(0, Math.min(360, y));
       renderPlayers();
     }
   }
 
-  function handleEnd() {
+  function handleEnd(e) {
+    if (e) e.preventDefault();
     document.removeEventListener('mousemove', handleMove);
     document.removeEventListener('touchmove', handleMove);
     document.removeEventListener('mouseup', handleEnd);
     document.removeEventListener('touchend', handleEnd);
 
-    // If no movement, treat as a click and start route drawing
+    if (hasMoved && selectedPlayer) {
+      selectedPlayer.startX = selectedPlayer.x;
+      selectedPlayer.startY = selectedPlayer.y;
+    }
+
     if (!hasMoved && selectedPlayer) {
       startRouteDrawing({ clientX: startX, clientY: startY }, selectedPlayer.id);
     }
@@ -354,134 +319,134 @@ function handleDragStart(e, playerId) {
     selectedPlayer = null;
   }
 
-  document.addEventListener('mousemove', handleMove);
-  document.addEventListener('touchmove', handleMove);
+  document.addEventListener('mousemove', handleMove, false);
+  document.addEventListener('touchmove', handleMove, { passive: false });
   document.addEventListener('mouseup', handleEnd);
   document.addEventListener('touchend', handleEnd);
 }
 
 function startRouteDrawing(e, playerId) {
+  const players = [...offensePlayers, ...defenseAllayers];
   const player = players.find(p => p.id === playerId);
   if (!player) return;
 
   const rect = svg.getBoundingClientRect();
+  const scaleX = 600 / rect.width;
+  const scaleY = 360 / rect.height;
 
   drawingRoute = { playerId: playerId, x1: player.x, y1: player.y, x2: player.x, y2: player.y, isDefense: player.isDefense };
+  renderRoutes();
 
   function handleMove(e) {
-    const clientX = e.clientX || e.touches[0].clientX;
-    const clientY = e.clientY || e.touches[0].clientY;
-    drawingRoute.x2 = clientX - rect.left;
-    drawingRoute.y2 = clientY - rect.top;
+    if (e) e.preventDefault();
+    const touch = e.touches ? e.touches[0] : e;
+    const clientX = touch.clientX;
+    const clientY = touch.clientY;
+
+    drawingRoute.x2 = (clientX - rect.left) * scaleX;
+    drawingRoute.y2 = (clientY - rect.top) * scaleY;
+    drawingRoute.x2 = Math.max(0, Math.min(600, drawingRoute.x2));
+    drawingRoute.y2 = Math.max(0, Math.min(360, drawingRoute.y2));
     renderRoutes();
   }
 
   function handleEnd(e) {
+    if (e) e.preventDefault();
     document.removeEventListener('mousemove', handleMove);
     document.removeEventListener('touchmove', handleMove);
     document.removeEventListener('mouseup', handleEnd);
     document.removeEventListener('touchend', handleEnd);
 
+    const routes = currentMode === 'defense' ? defenseRoutes : offenseRoutes;
     if (drawingRoute && (drawingRoute.x1 !== drawingRoute.x2 || drawingRoute.y1 !== drawingRoute.y2)) {
       routes.push({ ...drawingRoute });
+      const player = players.find(p => p.id === drawingRoute.playerId);
+      if (player) {
+        player.x = player.startX;
+        player.y = player.startY;
+      }
     }
     drawingRoute = null;
     renderRoutes();
+    renderPlayers();
   }
 
-  document.addEventListener('mousemove', handleMove);
-  document.addEventListener('touchmove', handleMove);
+  document.addEventListener('mousemove', handleMove, false);
+  document.addEventListener('touchmove', handleMove, { passive: false });
   document.addEventListener('mouseup', handleEnd);
   document.addEventListener('touchend', handleEnd);
 }
 
-function setEditMode(mode) {
-  editMode = mode;
-  modeOffenseBtn.classList.toggle('active', mode === 'offense');
-  modeDefenseBtn.classList.toggle('active', mode === 'defense');
-  formationSelect.style.display = mode === 'offense' ? '' : 'none';
-  defenseSelect.style.display = mode === 'defense' ? '' : 'none';
-  renderPlayers();
-  renderRoutes();
+function startPlacementMode(position, isDefense) {
+  placementMode = position;
+  const sectionId = isDefense ? 'defenseSection' : 'offenseSection';
+  const btnId = isDefense ? `defense${position}Btn` : `offense${position}Btn`;
+  const btn = document.getElementById(btnId);
+  if (btn) {
+    btn.style.opacity = '0.5';
+    btn.textContent = `+ ${position} (Click to place)`;
+  }
+
+  infoDiv.textContent = `Click on the field to place a ${position}. Escape to cancel.`;
 }
 
-function loadFormation(type, name) {
-  if (type === 'offense') {
-    players = players.filter(p => p.isDefense);
-    OFFENSIVE_FORMATIONS[name].forEach(p => createPlayer(p.x, p.y, p.role, false));
-  } else {
-    players = players.filter(p => !p.isDefense);
-    DEFENSIVE_FORMATIONS[name].forEach(p => createPlayer(p.x, p.y, p.role, true));
+function cancelPlacementMode() {
+  if (!placementMode) return;
+
+  const sectionId = currentMode === 'defense' ? 'defenseSection' : 'offenseSection';
+  const btnId = (currentMode === 'defense' ? 'defense' : 'offense') + placementMode + 'Btn';
+  const btn = document.getElementById(btnId);
+  if (btn) {
+    btn.style.opacity = '1';
+    btn.textContent = `+ ${placementMode}`;
   }
+
+  placementMode = null;
   renderPlayers();
+
+  const editingTeam = currentMode === 'defense' ? 'Defense' : 'Offense';
+  infoDiv.textContent = `<strong>${editingTeam}:</strong> Click a position button, then click on the field to place players.`;
 }
 
 function simulatePlay() {
   if (isSimulating) return;
-  isSimulating = true;
-  playBtn.textContent = 'Stop';
-
-  const speed = parseFloat(speedSlider.value);
-  const duration = 3000 / speed;
-  const startTime = Date.now();
-  const offensePlayers = players.filter(p => !p.isDefense && p.role !== 'QB');
-  const defensePlayers = players.filter(p => p.isDefense);
-
   if (offensePlayers.length === 0) {
-    infoDiv.textContent = 'No offensive players to move!';
-    isSimulating = false;
-    playBtn.textContent = 'Play';
+    infoDiv.textContent = 'No offensive players! Design offense first.';
     return;
   }
 
-  // Offense follows drawn routes or moves randomly
-  offensePlayers.forEach(p => {
-    // Check if this player has a drawn route
-    const playerRoute = routes.find(r => !r.isDefense && r.playerId === p.id);
+  isSimulating = true;
+  const modeButtons = document.querySelectorAll('.mode-btn');
+  modeButtons.forEach(b => b.disabled = true);
 
+  const speed = parseFloat(document.getElementById('speed').value);
+  const duration = 3000 / speed;
+  const startTime = Date.now();
+
+  // Setup initial velocity
+  offensePlayers.forEach(p => {
+    const playerRoute = offenseRoutes.find(r => r.playerId === p.id);
     if (playerRoute) {
-      // Calculate velocity to follow the route
       const dx = playerRoute.x2 - p.startX;
       const dy = playerRoute.y2 - p.startY;
-      const dist = Math.hypot(dx, dy);
-      if (dist > 0) {
-        // Speed is calculated so the player reaches the endpoint in the duration of the play
-        p.vx = dx;
-        p.vy = dy;
-      } else {
-        // Route is too short, no movement
-        p.vx = 0;
-        p.vy = 0;
-      }
+      p.vx = dx;
+      p.vy = dy;
     } else {
-      // No route drawn, use random movement (default behavior)
       p.vx = (Math.random() - 0.5) * 400;
       p.vy = -80 - Math.random() * 60;
     }
   });
 
-  // Defense follows drawn routes or reacts to offense
-  defensePlayers.forEach(def => {
-    // Check if this defender has a drawn route
-    const defenderRoute = routes.find(r => r.isDefense && r.playerId === def.id);
-
+  defenseAllayers.forEach(def => {
+    const defenderRoute = defenseRoutes.find(r => r.playerId === def.id);
     if (defenderRoute) {
-      // Follow the drawn route
       const dx = defenderRoute.x2 - def.startX;
       const dy = defenderRoute.y2 - def.startY;
-      const dist = Math.hypot(dx, dy);
-      if (dist > 0) {
-        def.vx = dx;
-        def.vy = dy;
-      } else {
-        def.vx = 0;
-        def.vy = 0;
-      }
+      def.vx = dx;
+      def.vy = dy;
     } else {
-      // No route drawn, chase closest offensive player
       let closestOffense = null;
       let closestDist = Infinity;
-
       offensePlayers.forEach(off => {
         const dist = Math.hypot(off.startX - def.startX, off.startY - def.startY);
         if (dist < closestDist) {
@@ -489,7 +454,6 @@ function simulatePlay() {
           closestOffense = off;
         }
       });
-
       if (closestOffense) {
         const dx = closestOffense.startX - def.startX;
         const dy = closestOffense.startY - def.startY;
@@ -503,13 +467,8 @@ function simulatePlay() {
     }
   });
 
-  let animationId = null;
-
   function animate() {
-    if (!isSimulating) {
-      if (animationId) cancelAnimationFrame(animationId);
-      return;
-    }
+    if (!isSimulating) return;
 
     const elapsed = Date.now() - startTime;
     const progress = Math.min(elapsed / duration, 1);
@@ -521,7 +480,7 @@ function simulatePlay() {
       p.y = Math.max(0, Math.min(360, p.y));
     });
 
-    defensePlayers.forEach(p => {
+    defenseAllayers.forEach(p => {
       p.x = p.startX + p.vx * progress;
       p.y = p.startY + p.vy * progress;
       p.x = Math.max(60, Math.min(540, p.x));
@@ -531,65 +490,177 @@ function simulatePlay() {
     renderPlayers();
 
     if (progress < 1) {
-      animationId = requestAnimationFrame(animate);
+      requestAnimationFrame(animate);
     } else {
       isSimulating = false;
-      playBtn.textContent = 'Play';
       infoDiv.textContent = 'Play complete!';
+      modeButtons.forEach(b => b.disabled = false);
       resetPositions();
     }
   }
 
-  animationId = requestAnimationFrame(animate);
+  animate();
 }
 
 function resetPositions() {
-  players.forEach(p => { p.x = p.startX; p.y = p.startY; });
+  offensePlayers.forEach(p => { p.x = p.startX; p.y = p.startY; });
+  defenseAllayers.forEach(p => { p.x = p.startX; p.y = p.startY; });
   renderPlayers();
 }
 
-modeOffenseBtn.addEventListener('click', () => setEditMode('offense'));
-modeDefenseBtn.addEventListener('click', () => setEditMode('defense'));
-formationSelect.addEventListener('change', (e) => loadFormation('offense', e.target.value));
-defenseSelect.addEventListener('change', (e) => loadFormation('defense', e.target.value));
+function switchMode(newMode) {
+  cancelPlacementMode();
+  currentMode = newMode;
 
-playBtn.addEventListener('click', () => {
-  if (isSimulating) {
-    isSimulating = false;
-    playBtn.textContent = 'Play';
-    resetPositions();
+  // Update mode buttons
+  document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+  document.querySelector(`[data-mode="${newMode}"]`).classList.add('active');
+
+  // Update sections
+  document.getElementById('offenseSection').classList.toggle('hidden', newMode !== 'offense');
+  document.getElementById('defenseSection').classList.toggle('hidden', newMode !== 'defense');
+  document.getElementById('playSection').classList.toggle('hidden', newMode !== 'play');
+
+  // Update info
+  if (newMode === 'offense') {
+    infoDiv.innerHTML = '<strong>Offense:</strong> Click a position button, then click on the field to place players. Drag to reposition, click to draw routes.';
+  } else if (newMode === 'defense') {
+    infoDiv.innerHTML = '<strong>Defense:</strong> Click a position button, then click on the field to place players. Drag to reposition, click to draw routes.';
   } else {
-    simulatePlay();
+    infoDiv.innerHTML = '<strong>Play:</strong> Watch your offense vs defense. Adjust speed and hit Play.';
   }
+
+  renderPlayers();
+  renderRoutes();
+}
+
+// Mode buttons
+document.querySelectorAll('.mode-btn').forEach(btn => {
+  btn.addEventListener('click', () => switchMode(btn.dataset.mode));
 });
 
-resetBtn.addEventListener('click', resetPositions);
-clearBtn.addEventListener('click', () => { players = []; routes = []; renderPlayers(); renderRoutes(); });
-clearRoutesBtn.addEventListener('click', () => { routes = []; renderRoutes(); });
-speedSlider.addEventListener('input', (e) => { speedValue.textContent = e.target.value + 'x'; });
-exportBtn.addEventListener('click', () => {
-  navigator.clipboard.writeText(JSON.stringify({ offense: players.filter(p => !p.isDefense).map(p => ({ x: p.x, y: p.y, role: p.role })), defense: players.filter(p => p.isDefense).map(p => ({ x: p.x, y: p.y, role: p.role })), routes: routes }));
-  infoDiv.textContent = 'Saved!';
-});
-
-importBtn.addEventListener('click', () => {
-  navigator.clipboard.readText().then(text => {
-    try {
-      const data = JSON.parse(text);
-      players = [];
-      routes = [];
-      data.offense.forEach(p => createPlayer(p.x, p.y, p.role, false));
-      data.defense.forEach(p => createPlayer(p.x, p.y, p.role, true));
-      if (data.routes) routes = data.routes;
-      renderPlayers();
-      renderRoutes();
-      infoDiv.textContent = 'Loaded!';
-    } catch { infoDiv.textContent = 'Load failed'; }
+// Position buttons - Offense
+['QB', 'WR', 'RB', 'TE'].forEach(position => {
+  document.getElementById(`offense${position}Btn`).addEventListener('click', () => {
+    if (placementMode === position) {
+      cancelPlacementMode();
+    } else {
+      cancelPlacementMode();
+      startPlacementMode(position, false);
+    }
   });
 });
 
-setEditMode('offense');
+// Position buttons - Defense
+['DE', 'DT', 'LB', 'CB', 'S'].forEach(position => {
+  document.getElementById(`defense${position}Btn`).addEventListener('click', () => {
+    if (placementMode === position) {
+      cancelPlacementMode();
+    } else {
+      cancelPlacementMode();
+      startPlacementMode(position, true);
+    }
+  });
+});
+
+// Clear all players
+document.getElementById('offenseClearBtn').addEventListener('click', () => {
+  offensePlayers = [];
+  offenseRoutes = [];
+  renderPlayers();
+  renderRoutes();
+});
+
+document.getElementById('defenseClearBtn').addEventListener('click', () => {
+  defenseAllayers = [];
+  defenseRoutes = [];
+  renderPlayers();
+  renderRoutes();
+});
+
+// Clear routes
+document.getElementById('offenseClearRoutesBtn').addEventListener('click', () => {
+  offenseRoutes = [];
+  renderRoutes();
+});
+
+document.getElementById('defenseClearRoutesBtn').addEventListener('click', () => {
+  defenseRoutes = [];
+  renderRoutes();
+});
+
+// Field click handler for placement mode
+svg.addEventListener('click', (e) => {
+  if (!placementMode) return;
+
+  const rect = svg.getBoundingClientRect();
+  const scaleX = 600 / rect.width;
+  const scaleY = 360 / rect.height;
+
+  const x = (e.clientX - rect.left) * scaleX;
+  const y = (e.clientY - rect.top) * scaleY;
+
+  const isDefense = currentMode === 'defense';
+  createPlayer(x, y, placementMode, isDefense);
+  renderPlayers();
+  cancelPlacementMode();
+});
+
+// Escape key to cancel placement mode
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape' && placementMode) {
+    cancelPlacementMode();
+  }
+});
+
+// Play controls
+document.getElementById('playBtn').addEventListener('click', simulatePlay);
+document.getElementById('speed').addEventListener('input', (e) => {
+  document.getElementById('speedValue').textContent = e.target.value + 'x';
+});
+
+// Export/Import
+['offense', 'defense'].forEach(side => {
+  document.getElementById(`export${side.charAt(0).toUpperCase() + side.slice(1)}Btn`).addEventListener('click', () => {
+    const players = side === 'offense' ? offensePlayers : defenseAllayers;
+    const routes = side === 'offense' ? offenseRoutes : defenseRoutes;
+    navigator.clipboard.writeText(JSON.stringify({
+      players: players.map(p => ({ x: p.x, y: p.y, role: p.role })),
+      routes: routes
+    }));
+    infoDiv.textContent = `${side} saved!`;
+  });
+
+  document.getElementById(`import${side.charAt(0).toUpperCase() + side.slice(1)}Btn`).addEventListener('click', () => {
+    navigator.clipboard.readText().then(text => {
+      try {
+        const data = JSON.parse(text);
+        if (side === 'offense') {
+          offensePlayers = [];
+          data.players.forEach(p => createPlayer(p.x, p.y, p.role, false));
+          offenseRoutes = data.routes || [];
+        } else {
+          defenseAllayers = [];
+          data.players.forEach(p => createPlayer(p.x, p.y, p.role, true));
+          defenseRoutes = data.routes || [];
+        }
+        renderPlayers();
+        renderRoutes();
+        infoDiv.textContent = `${side} loaded!`;
+      } catch {
+        infoDiv.textContent = 'Load failed';
+      }
+    });
+  });
+});
+
+// Initialize with empty set formations
+initializeEmptySetFormation();
+switchMode('offense');
 </script>
+
+</body>
+</html>
 
 </body>
 </html>
