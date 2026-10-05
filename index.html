@@ -4,29 +4,30 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Football Play Creator</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
 <style>
 * { box-sizing: border-box; }
-html, body { margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f5f5f5; width: 100%; height: 100%; }
-.container { display: flex; flex-direction: column; height: 100vh; width: 100%; }
-.toolbar { padding: 12px; border-bottom: 1px solid #ddd; display: flex; gap: 8px; flex-wrap: wrap; background: #f0f0f0; font-size: 14px; align-items: center; }
-.toolbar button, .toolbar select { padding: 10px 14px; border: 1px solid #ddd; background: #fff; border-radius: 6px; cursor: pointer; font-size: 14px; min-height: 44px; touch-action: manipulation; }
-.toolbar button:hover { background: #f0f0f0; }
-.toolbar button.active { background: #4a90e2; color: white; border-color: #4a90e2; }
-.mode-buttons { display: flex; gap: 4px; border-right: 1px solid #ddd; padding-right: 12px; }
-.divider { width: 1px; background: #ddd; height: 30px; }
+html, body { margin: 0; padding: 0; font-family: 'Space Grotesk', system-ui, sans-serif; background: #0f0f0f; width: 100%; height: 100%; }
+.container { display: flex; flex-direction: column; height: 100vh; width: 100%; background: #0f0f0f; }
+.toolbar { padding: 16px; border-bottom: 2px solid #374151; display: flex; gap: 12px; flex-wrap: wrap; background: #1f2937; font-size: 14px; align-items: center; }
+.toolbar button, .toolbar select { padding: 10px 14px; border: 1px solid #4b5563; background: transparent; color: #9ca3af; border-radius: 6px; cursor: pointer; font-size: 13px; min-height: 44px; touch-action: manipulation; font-family: inherit; font-weight: 600; }
+.toolbar button:hover { background: #374151; }
+.toolbar button.active { background: #3b82f6; color: white; border-color: #3b82f6; }
+.mode-buttons { display: flex; gap: 4px; border-right: 1px solid #4b5563; padding-right: 12px; }
+.divider { width: 1px; background: #4b5563; height: 30px; }
 @media (max-width: 600px) {
-  .toolbar { padding: 8px; gap: 6px; }
-  .toolbar button, .toolbar select { padding: 10px 12px; font-size: 13px; min-height: 40px; }
+  .toolbar { padding: 12px; gap: 8px; }
+  .toolbar button, .toolbar select { padding: 10px 12px; font-size: 12px; min-height: 40px; }
   .mode-buttons { gap: 2px; }
 }
-.toolbar button.active { background: #4a90e2; color: white; border-color: #4a90e2; }
-.field-container { flex: 1; display: flex; align-items: center; justify-content: center; padding: 8px; overflow: auto; background: #f5f5f5; }
-svg#field { max-width: 100%; max-height: 100%; background: #1a5f1a; border: 2px solid #333; touch-action: none; user-select: none; }
+.field-container { flex: 1; display: flex; align-items: center; justify-content: center; padding: 16px; overflow: auto; background: linear-gradient(180deg, #0d4620 0%, #0a3a1a 100%); }
+svg#field { max-width: 100%; max-height: 100%; background: linear-gradient(90deg, #0d4620 0%, #0a3a1a 100%); border: 3px solid #fbbf24; touch-action: none; user-select: none; box-shadow: 0 20px 60px rgba(0,0,0,0.5); }
 .controls { padding: 10px; border-top: 1px solid #ddd; background: #fff; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; font-size: 13px; }
 .controls button { min-height: 40px; padding: 8px 12px; }
 .slider-group { display: flex; gap: 6px; align-items: center; }
 input[type="range"] { width: 100px; height: 28px; }
-.info-panel { padding: 12px; border-top: 1px solid #ddd; background: #f9f9f9; font-size: 13px; min-height: auto; }
+.info-panel { padding: 14px 16px; border-top: 1px solid #374151; background: #1f2937; font-size: 13px; color: #d1d5db; line-height: 1.5; min-height: auto; }
+.info-panel strong { color: #fbbf24; }
 .hidden { display: none !important; }
 .section { display: flex; gap: 12px; align-items: center; }
 </style>
@@ -77,34 +78,47 @@ input[type="range"] { width: 100px; height: 28px; }
         <span id="speedValue">1.0x</span>
       </div>
     </div>
+
+    <!-- Route drawing controls -->
+    <div class="section" id="routeSection">
+      <button id="drawRoutesBtn" class="mode-btn">🎯 Draw Routes</button>
+      <button id="clearRoutesBtn">Clear Routes</button>
+    </div>
   </div>
 
   <div class="field-container">
-    <svg id="field" width="600" height="360" viewBox="0 0 600 360">
-      <rect width="600" height="360" fill="#1a5f1a"/>
-      <rect x="0" y="0" width="60" height="360" fill="#0d3a0d" opacity="0.7"/>
-      <rect x="540" y="0" width="60" height="360" fill="#0d3a0d" opacity="0.7"/>
-      <line x1="60" y1="0" x2="60" y2="360" stroke="white" stroke-width="1" stroke-dasharray="2,8"/>
-      <line x1="120" y1="0" x2="120" y2="360" stroke="white" stroke-width="1" stroke-dasharray="2,8"/>
-      <line x1="180" y1="0" x2="180" y2="360" stroke="white" stroke-width="1"/>
-      <line x1="240" y1="0" x2="240" y2="360" stroke="white" stroke-width="1" stroke-dasharray="2,8"/>
-      <line x1="300" y1="0" x2="300" y2="360" stroke="white" stroke-width="1"/>
-      <line x1="360" y1="0" x2="360" y2="360" stroke="white" stroke-width="1" stroke-dasharray="2,8"/>
-      <line x1="420" y1="0" x2="420" y2="360" stroke="white" stroke-width="1"/>
-      <line x1="480" y1="0" x2="480" y2="360" stroke="white" stroke-width="1" stroke-dasharray="2,8"/>
-      <line x1="540" y1="0" x2="540" y2="360" stroke="white" stroke-width="1"/>
-      <line x1="0" y1="121" x2="600" y2="121" stroke="white" stroke-width="0.5" opacity="0.3"/>
-      <line x1="0" y1="239" x2="600" y2="239" stroke="white" stroke-width="0.5" opacity="0.3"/>
-      <line x1="60" y1="0" x2="60" y2="360" stroke="white" stroke-width="2"/>
-      <line x1="540" y1="0" x2="540" y2="360" stroke="white" stroke-width="2"/>
+    <svg id="field" width="550" height="600" viewBox="0 0 550 600">
+      <defs>
+        <linearGradient id="fieldGradient" x1="0" y1="0" x2="0" y2="600">
+          <stop offset="0%" style="stop-color:#0d4620;stop-opacity:1" />
+          <stop offset="100%" style="stop-color:#0a3a1a;stop-opacity:1" />
+        </linearGradient>
+      </defs>
+      <rect width="550" height="600" fill="url(#fieldGradient)"/>
+      <rect x="0" y="0" width="550" height="60" fill="#0d3a0d" opacity="0.7"/>
+      <rect x="0" y="540" width="550" height="60" fill="#0d3a0d" opacity="0.7"/>
+      <line x1="0" y1="60" x2="550" y2="60" stroke="white" stroke-width="1" stroke-dasharray="2,8"/>
+      <line x1="0" y1="120" x2="550" y2="120" stroke="white" stroke-width="1" stroke-dasharray="2,8"/>
+      <line x1="0" y1="180" x2="550" y2="180" stroke="white" stroke-width="1"/>
+      <line x1="0" y1="240" x2="550" y2="240" stroke="white" stroke-width="1" stroke-dasharray="2,8"/>
+      <line x1="0" y1="300" x2="550" y2="300" stroke="white" stroke-width="1"/>
+      <line x1="0" y1="360" x2="550" y2="360" stroke="white" stroke-width="1" stroke-dasharray="2,8"/>
+      <line x1="0" y1="420" x2="550" y2="420" stroke="white" stroke-width="1"/>
+      <line x1="0" y1="480" x2="550" y2="480" stroke="white" stroke-width="1" stroke-dasharray="2,8"/>
+      <line x1="0" y1="540" x2="550" y2="540" stroke="white" stroke-width="1"/>
+      <line x1="151" y1="0" x2="151" y2="600" stroke="white" stroke-width="0.5" opacity="0.3"/>
+      <line x1="299" y1="0" x2="299" y2="600" stroke="white" stroke-width="0.5" opacity="0.3"/>
+      <line x1="0" y1="60" x2="550" y2="60" stroke="white" stroke-width="2"/>
+      <line x1="0" y1="540" x2="550" y2="540" stroke="white" stroke-width="2"/>
       <g id="routes"></g>
       <g id="players"></g>
     </svg>
   </div>
 
   <div class="info-panel" id="info">
-    <strong>Offense:</strong> Click a position button, then click on the field to place players. Drag to reposition, click to draw routes.
+    <strong>Offense:</strong> Click a position button, then click on the field to place players. Tap a player to move or draw routes.
   </div>
+
 </div>
 
 <script>
@@ -119,9 +133,9 @@ let offenseRoutes = [];
 let defenseRoutes = [];
 let currentMode = 'offense';
 let isSimulating = false;
-let selectedPlayer = null;
-let drawingRoute = null;
-let placementMode = null; // 'QB', 'WR', etc., or null
+let drawRoutesMode = false;
+let routeStartPlayerId = null;
+let placementMode = null;
 
 function createPlayer(x, y, role, isDefense) {
   const player = { id: Math.random(), x, y, role, isDefense, startX: x, startY: y, vx: 0, vy: 0 };
@@ -137,21 +151,38 @@ function initializeEmptySetFormation() {
   offensePlayers = [];
   defenseAllayers = [];
 
-  // Offense empty set - closer to midfield (x around 250-280)
-  createPlayer(250, 180, 'QB', false);
-  createPlayer(280, 120, 'WR', false);
-  createPlayer(280, 145, 'WR', false);
-  createPlayer(280, 170, 'WR', false);
-  createPlayer(280, 195, 'WR', false);
-  createPlayer(280, 220, 'WR', false);
+  // Offense formation - 11 players (5 OL, 4 WR, 1 QB, 1 RB) - BELOW SCRIMMAGE LINE
+  createPlayer(275, 480, 'QB', false);
+  createPlayer(250, 450, 'RB', false);
+  // Offensive Line - at scrimmage line
+  createPlayer(125, 320, 'LT', false);
+  createPlayer(175, 320, 'LG', false);
+  createPlayer(275, 320, 'C', false);
+  createPlayer(375, 320, 'RG', false);
+  createPlayer(425, 320, 'RT', false);
+  // Wide Receivers - spread to edges, downfield
+  createPlayer(80, 400, 'WR', false);
+  createPlayer(155, 400, 'WR', false);
+  createPlayer(395, 400, 'WR', false);
+  createPlayer(470, 400, 'WR', false);
 
-  // Defense formation - closer to midfield, mirrored (x around 320-350)
-  createPlayer(320, 160, 'DE', true);
-  createPlayer(320, 200, 'DE', true);
-  createPlayer(335, 180, 'DT', true);
-  createPlayer(350, 120, 'CB', true);
-  createPlayer(350, 240, 'CB', true);
-  createPlayer(350, 180, 'S', true);
+  // Defense formation - 11 players (4-3 Defense: 2 DE, 2 DT, 3 LB, 2 CB, 2 S) - ABOVE SCRIMMAGE LINE
+  // Defensive Ends
+  createPlayer(120, 140, 'DE', true);
+  createPlayer(430, 140, 'DE', true);
+  // Defensive Tackles
+  createPlayer(190, 200, 'DT', true);
+  createPlayer(360, 200, 'DT', true);
+  // Linebackers - at/near scrimmage line
+  createPlayer(120, 270, 'LB', true);
+  createPlayer(275, 270, 'LB', true);
+  createPlayer(430, 270, 'LB', true);
+  // Cornerbacks - at edges, covering WRs
+  createPlayer(60, 160, 'CB', true);
+  createPlayer(490, 160, 'CB', true);
+  // Safeties - deep coverage
+  createPlayer(200, 100, 'S', true);
+  createPlayer(350, 100, 'S', true);
 
   renderPlayers();
   renderRoutes();
@@ -183,19 +214,6 @@ function renderRoutes() {
     endpoint.setAttribute('stroke-width', 2);
     routesGroup.appendChild(endpoint);
   });
-
-  if (drawingRoute) {
-    const previewLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-    previewLine.setAttribute('x1', drawingRoute.x1);
-    previewLine.setAttribute('y1', drawingRoute.y1);
-    previewLine.setAttribute('x2', drawingRoute.x2);
-    previewLine.setAttribute('y2', drawingRoute.y2);
-    previewLine.setAttribute('stroke', drawingRoute.isDefense ? '#ff9999' : '#9abfff');
-    previewLine.setAttribute('stroke-width', 4);
-    previewLine.setAttribute('stroke-dasharray', '5,5');
-    previewLine.setAttribute('opacity', '0.7');
-    routesGroup.appendChild(previewLine);
-  }
 }
 
 function renderPlayers() {
@@ -204,58 +222,150 @@ function renderPlayers() {
   const editingTeam = currentMode === 'defense' ? 'defense' : 'offense';
 
   players.forEach(p => {
-    const isBeingRouted = drawingRoute && drawingRoute.playerId === p.id;
+    const isBeingRouted = routeStartPlayerId === p.id;
     const isDefense = p.isDefense;
     const isEditable = (editingTeam === 'offense' && !isDefense) || (editingTeam === 'defense' && isDefense) || currentMode === 'play';
 
-    if (isBeingRouted) {
-      const glow = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-      glow.setAttribute('cx', p.x);
-      glow.setAttribute('cy', p.y);
-      glow.setAttribute('r', 20);
-      glow.setAttribute('fill', 'none');
-      glow.setAttribute('stroke', isDefense ? '#ff5555' : '#5a9fff');
-      glow.setAttribute('stroke-width', 2);
-      glow.setAttribute('opacity', '0.6');
-      glow.setAttribute('stroke-dasharray', '3,3');
-      playersGroup.appendChild(glow);
-    }
-
-    const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-    circle.setAttribute('cx', p.x);
-    circle.setAttribute('cy', p.y);
-    circle.setAttribute('r', 12);
-    circle.setAttribute('fill', isDefense ? '#ff6b6b' : '#4a90e2');
-    circle.setAttribute('stroke', isBeingRouted ? '#ffff00' : 'white');
-    circle.setAttribute('stroke-width', isBeingRouted ? 3 : 1);
-    circle.style.cursor = isEditable ? 'grab' : 'default';
-    circle.style.opacity = !isEditable && currentMode !== 'play' ? '0.5' : '1';
-
-    const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-    text.setAttribute('x', p.x);
-    text.setAttribute('y', p.y);
-    text.setAttribute('text-anchor', 'middle');
-    text.setAttribute('dy', '0.3em');
-    text.setAttribute('font-size', '10');
-    text.setAttribute('font-weight', 'bold');
-    text.setAttribute('fill', 'white');
-    text.setAttribute('pointer-events', 'none');
-    text.textContent = p.role[0];
+    const primaryColor = isDefense ? '#ef4444' : '#3b82f6';
+    const accentColor = isDefense ? '#dc2626' : '#1d4ed8';
+    const opacity = !isEditable && currentMode !== 'play' ? '0.7' : '1';
 
     const group = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-    group.appendChild(circle);
-    group.appendChild(text);
+    group.setAttribute('opacity', opacity);
+    group.setAttribute('transform', `translate(${p.x}, ${p.y})`);
+
+    // Highlight player being routed in Draw Routes mode
+    if (isBeingRouted) {
+      // Outer glow
+      const glow = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+      glow.setAttribute('cx', 0);
+      glow.setAttribute('cy', 0);
+      glow.setAttribute('r', 36);
+      glow.setAttribute('fill', 'none');
+      glow.setAttribute('stroke', '#fbbf24');
+      glow.setAttribute('stroke-width', 2);
+      glow.setAttribute('opacity', '0.4');
+      group.appendChild(glow);
+
+      // Inner highlight
+      const highlight = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+      highlight.setAttribute('cx', 0);
+      highlight.setAttribute('cy', 0);
+      highlight.setAttribute('r', 28);
+      highlight.setAttribute('fill', '#fbbf24');
+      highlight.setAttribute('fill-opacity', '0.15');
+      highlight.setAttribute('stroke', '#fbbf24');
+      highlight.setAttribute('stroke-width', 2.5);
+      highlight.setAttribute('opacity', '1');
+      group.appendChild(highlight);
+    }
+
+    // Helmet
+    const helmet = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+    helmet.setAttribute('cx', 0);
+    helmet.setAttribute('cy', -14);
+    helmet.setAttribute('r', 6);
+    helmet.setAttribute('fill', accentColor);
+    helmet.setAttribute('stroke', 'white');
+    helmet.setAttribute('stroke-width', '1');
+    group.appendChild(helmet);
+
+    // Jersey graphic - realistic football jersey
+    const jerseyGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+    jerseyGroup.setAttribute('transform', 'scale(0.5)');
+
+    // Main jersey body (trapezoid shape for realistic look)
+    const jerseyBody = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    jerseyBody.setAttribute('d', 'M -14 -8 L 14 -8 L 16 20 L -16 20 Z');
+    jerseyBody.setAttribute('fill', primaryColor);
+    jerseyBody.setAttribute('stroke', 'white');
+    jerseyBody.setAttribute('stroke-width', '2');
+    jerseyBody.style.cursor = isEditable ? 'grab' : 'default';
+    jerseyGroup.appendChild(jerseyBody);
+
+    // Left shoulder/sleeve
+    const leftShoulder = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    leftShoulder.setAttribute('d', 'M -14 -6 L -24 0 L -22 12 L -14 8 Z');
+    leftShoulder.setAttribute('fill', primaryColor);
+    leftShoulder.setAttribute('stroke', 'white');
+    leftShoulder.setAttribute('stroke-width', '1.5');
+    jerseyGroup.appendChild(leftShoulder);
+
+    // Right shoulder/sleeve
+    const rightShoulder = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    rightShoulder.setAttribute('d', 'M 14 -6 L 24 0 L 22 12 L 14 8 Z');
+    rightShoulder.setAttribute('fill', primaryColor);
+    rightShoulder.setAttribute('stroke', 'white');
+    rightShoulder.setAttribute('stroke-width', '1.5');
+    jerseyGroup.appendChild(rightShoulder);
+
+    // Collar outline
+    const collar = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    collar.setAttribute('d', 'M -6 -8 L 6 -8 L 5 -2 L -5 -2 Z');
+    collar.setAttribute('fill', 'none');
+    collar.setAttribute('stroke', accentColor);
+    collar.setAttribute('stroke-width', '1.5');
+    jerseyGroup.appendChild(collar);
+
+    // Center stripe (vertical accent line)
+    const stripe = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+    stripe.setAttribute('x1', 0);
+    stripe.setAttribute('y1', -8);
+    stripe.setAttribute('x2', 0);
+    stripe.setAttribute('y2', 20);
+    stripe.setAttribute('stroke', 'white');
+    stripe.setAttribute('stroke-width', '1');
+    stripe.setAttribute('opacity', '0.4');
+    jerseyGroup.appendChild(stripe);
+
+    group.appendChild(jerseyGroup);
+
+    // Jersey number - large and bold
+    const numberText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    numberText.setAttribute('x', 0);
+    numberText.setAttribute('y', 6);
+    numberText.setAttribute('text-anchor', 'middle');
+    numberText.setAttribute('font-size', '12');
+    numberText.setAttribute('font-weight', 'bold');
+    numberText.setAttribute('font-family', 'Arial, sans-serif');
+    numberText.setAttribute('fill', 'white');
+    numberText.setAttribute('pointer-events', 'none');
+    numberText.textContent = p.role[0];
+    group.appendChild(numberText);
+
     group.dataset.playerId = p.id;
 
     if (isEditable) {
-      group.addEventListener('mousedown', (e) => handleDragStart(e, p.id));
-      group.addEventListener('touchstart', (e) => handleDragStart(e, p.id));
+      group.addEventListener('mousedown', (e) => {
+        e.stopPropagation();
+        // If in Draw Routes mode, start route from this player
+        if (drawRoutesMode) {
+          routeStartPlayerId = p.id;
+          renderPlayers();
+          infoDiv.textContent = `Drawing route from ${p.role}. Click the field to set endpoint.`;
+        } else {
+          // Otherwise drag to move
+          handlePlayerInteraction(e, p.id);
+        }
+      });
+      group.addEventListener('touchstart', (e) => {
+        e.stopPropagation();
+        // If in Draw Routes mode, start route from this player
+        if (drawRoutesMode) {
+          routeStartPlayerId = p.id;
+          renderPlayers();
+          infoDiv.textContent = `Drawing route from ${p.role}. Click the field to set endpoint.`;
+        } else {
+          // Otherwise drag to move
+          handlePlayerInteraction(e, p.id);
+        }
+      });
+      group.style.cursor = drawRoutesMode ? 'crosshair' : 'grab';
     }
 
     playersGroup.appendChild(group);
   });
 
-  // Update cursor based on placement mode
   if (placementMode) {
     svg.style.cursor = 'crosshair';
   } else {
@@ -263,11 +373,10 @@ function renderPlayers() {
   }
 }
 
-function handleDragStart(e, playerId) {
-  e.preventDefault();
+function handlePlayerInteraction(e, playerId) {
   const players = [...offensePlayers, ...defenseAllayers];
-  selectedPlayer = players.find(p => p.id === playerId);
-  if (!selectedPlayer) return;
+  const player = players.find(p => p.id === playerId);
+  if (!player) return;
 
   const rect = svg.getBoundingClientRect();
   const touch = e.touches ? e.touches[0] : e;
@@ -275,11 +384,11 @@ function handleDragStart(e, playerId) {
   const startY = touch.clientY;
   let hasMoved = false;
 
-  const scaleX = 600 / rect.width;
-  const scaleY = 360 / rect.height;
+  const scaleX = 550 / rect.width;
+  const scaleY = 600 / rect.height;
 
-  const offsetX = (startX - rect.left) * scaleX - selectedPlayer.x;
-  const offsetY = (startY - rect.top) * scaleY - selectedPlayer.y;
+  const offsetX = (startX - rect.left) * scaleX - player.x;
+  const offsetY = (startY - rect.top) * scaleY - player.y;
 
   function handleMove(e) {
     e.preventDefault();
@@ -294,8 +403,8 @@ function handleDragStart(e, playerId) {
     if (hasMoved) {
       const x = (clientX - rect.left) * scaleX - offsetX;
       const y = (clientY - rect.top) * scaleY - offsetY;
-      selectedPlayer.x = Math.max(0, Math.min(600, x));
-      selectedPlayer.y = Math.max(0, Math.min(360, y));
+      player.x = Math.max(0, Math.min(550, x));
+      player.y = Math.max(0, Math.min(600, y));
       renderPlayers();
     }
   }
@@ -307,16 +416,10 @@ function handleDragStart(e, playerId) {
     document.removeEventListener('mouseup', handleEnd);
     document.removeEventListener('touchend', handleEnd);
 
-    if (hasMoved && selectedPlayer) {
-      selectedPlayer.startX = selectedPlayer.x;
-      selectedPlayer.startY = selectedPlayer.y;
+    if (hasMoved) {
+      player.startX = player.x;
+      player.startY = player.y;
     }
-
-    if (!hasMoved && selectedPlayer) {
-      startRouteDrawing({ clientX: startX, clientY: startY }, selectedPlayer.id);
-    }
-
-    selectedPlayer = null;
   }
 
   document.addEventListener('mousemove', handleMove, false);
@@ -325,57 +428,7 @@ function handleDragStart(e, playerId) {
   document.addEventListener('touchend', handleEnd);
 }
 
-function startRouteDrawing(e, playerId) {
-  const players = [...offensePlayers, ...defenseAllayers];
-  const player = players.find(p => p.id === playerId);
-  if (!player) return;
 
-  const rect = svg.getBoundingClientRect();
-  const scaleX = 600 / rect.width;
-  const scaleY = 360 / rect.height;
-
-  drawingRoute = { playerId: playerId, x1: player.x, y1: player.y, x2: player.x, y2: player.y, isDefense: player.isDefense };
-  renderRoutes();
-
-  function handleMove(e) {
-    if (e) e.preventDefault();
-    const touch = e.touches ? e.touches[0] : e;
-    const clientX = touch.clientX;
-    const clientY = touch.clientY;
-
-    drawingRoute.x2 = (clientX - rect.left) * scaleX;
-    drawingRoute.y2 = (clientY - rect.top) * scaleY;
-    drawingRoute.x2 = Math.max(0, Math.min(600, drawingRoute.x2));
-    drawingRoute.y2 = Math.max(0, Math.min(360, drawingRoute.y2));
-    renderRoutes();
-  }
-
-  function handleEnd(e) {
-    if (e) e.preventDefault();
-    document.removeEventListener('mousemove', handleMove);
-    document.removeEventListener('touchmove', handleMove);
-    document.removeEventListener('mouseup', handleEnd);
-    document.removeEventListener('touchend', handleEnd);
-
-    const routes = currentMode === 'defense' ? defenseRoutes : offenseRoutes;
-    if (drawingRoute && (drawingRoute.x1 !== drawingRoute.x2 || drawingRoute.y1 !== drawingRoute.y2)) {
-      routes.push({ ...drawingRoute });
-      const player = players.find(p => p.id === drawingRoute.playerId);
-      if (player) {
-        player.x = player.startX;
-        player.y = player.startY;
-      }
-    }
-    drawingRoute = null;
-    renderRoutes();
-    renderPlayers();
-  }
-
-  document.addEventListener('mousemove', handleMove, false);
-  document.addEventListener('touchmove', handleMove, { passive: false });
-  document.addEventListener('mouseup', handleEnd);
-  document.addEventListener('touchend', handleEnd);
-}
 
 function startPlacementMode(position, isDefense) {
   placementMode = position;
@@ -476,15 +529,15 @@ function simulatePlay() {
     offensePlayers.forEach(p => {
       p.x = p.startX + p.vx * progress;
       p.y = p.startY + p.vy * progress;
-      p.x = Math.max(60, Math.min(540, p.x));
-      p.y = Math.max(0, Math.min(360, p.y));
+      p.x = Math.max(0, Math.min(550, p.x));
+      p.y = Math.max(60, Math.min(540, p.y));
     });
 
     defenseAllayers.forEach(p => {
       p.x = p.startX + p.vx * progress;
       p.y = p.startY + p.vy * progress;
-      p.x = Math.max(60, Math.min(540, p.x));
-      p.y = Math.max(0, Math.min(360, p.y));
+      p.x = Math.max(0, Math.min(550, p.x));
+      p.y = Math.max(60, Math.min(540, p.y));
     });
 
     renderPlayers();
@@ -510,11 +563,16 @@ function resetPositions() {
 
 function switchMode(newMode) {
   cancelPlacementMode();
+  drawRoutesMode = false;
+  routeStartPlayerId = null;
   currentMode = newMode;
 
   // Update mode buttons
   document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
-  document.querySelector(`[data-mode="${newMode}"]`).classList.add('active');
+  const modeBtn = document.querySelector(`[data-mode="${newMode}"]`);
+  if (modeBtn) {
+    modeBtn.classList.add('active');
+  }
 
   // Update sections
   document.getElementById('offenseSection').classList.toggle('hidden', newMode !== 'offense');
@@ -523,9 +581,9 @@ function switchMode(newMode) {
 
   // Update info
   if (newMode === 'offense') {
-    infoDiv.innerHTML = '<strong>Offense:</strong> Click a position button, then click on the field to place players. Drag to reposition, click to draw routes.';
+    infoDiv.innerHTML = '<strong>Offense:</strong> Click a position button to place players. Drag to move. Use Draw Routes mode to draw routes.';
   } else if (newMode === 'defense') {
-    infoDiv.innerHTML = '<strong>Defense:</strong> Click a position button, then click on the field to place players. Drag to reposition, click to draw routes.';
+    infoDiv.innerHTML = '<strong>Defense:</strong> Click a position button to place players. Drag to move. Use Draw Routes mode to draw routes.';
   } else {
     infoDiv.innerHTML = '<strong>Play:</strong> Watch your offense vs defense. Adjust speed and hit Play.';
   }
@@ -534,8 +592,33 @@ function switchMode(newMode) {
   renderRoutes();
 }
 
-// Mode buttons
-document.querySelectorAll('.mode-btn').forEach(btn => {
+// Draw Routes mode toggle
+document.getElementById('drawRoutesBtn').addEventListener('click', () => {
+  drawRoutesMode = !drawRoutesMode;
+  routeStartPlayerId = null;
+  document.getElementById('drawRoutesBtn').classList.toggle('active', drawRoutesMode);
+
+  if (drawRoutesMode) {
+    infoDiv.textContent = 'Draw Routes: Click a player, then click the field to set the route endpoint.';
+  } else {
+    infoDiv.textContent = 'Draw Routes mode disabled.';
+  }
+  renderPlayers();
+});
+
+// Clear Routes button
+document.getElementById('clearRoutesBtn').addEventListener('click', () => {
+  if (currentMode === 'offense') {
+    offenseRoutes = [];
+  } else if (currentMode === 'defense') {
+    defenseRoutes = [];
+  }
+  routeStartPlayerId = null;
+  renderRoutes();
+});
+
+// Mode buttons (only buttons with data-mode attribute, not Draw Routes)
+document.querySelectorAll('[data-mode]').forEach(btn => {
   btn.addEventListener('click', () => switchMode(btn.dataset.mode));
 });
 
@@ -589,21 +672,48 @@ document.getElementById('defenseClearRoutesBtn').addEventListener('click', () =>
   renderRoutes();
 });
 
-// Field click handler for placement mode
+// Field click handler for placement mode and route drawing
 svg.addEventListener('click', (e) => {
-  if (!placementMode) return;
+  // If in placement mode, place a new player
+  if (placementMode) {
+    const rect = svg.getBoundingClientRect();
+    const scaleX = 550 / rect.width;
+    const scaleY = 600 / rect.height;
 
-  const rect = svg.getBoundingClientRect();
-  const scaleX = 600 / rect.width;
-  const scaleY = 360 / rect.height;
+    const x = (e.clientX - rect.left) * scaleX;
+    const y = (e.clientY - rect.top) * scaleY;
 
-  const x = (e.clientX - rect.left) * scaleX;
-  const y = (e.clientY - rect.top) * scaleY;
+    const isDefense = currentMode === 'defense';
+    createPlayer(x, y, placementMode, isDefense);
+    renderPlayers();
+    cancelPlacementMode();
+  }
+  // Handle route drawing in Draw Routes mode
+  else if (drawRoutesMode && routeStartPlayerId) {
+    const rect = svg.getBoundingClientRect();
+    const scaleX = 550 / rect.width;
+    const scaleY = 600 / rect.height;
 
-  const isDefense = currentMode === 'defense';
-  createPlayer(x, y, placementMode, isDefense);
-  renderPlayers();
-  cancelPlacementMode();
+    const x = (e.clientX - rect.left) * scaleX;
+    const y = (e.clientY - rect.top) * scaleY;
+
+    const players = [...offensePlayers, ...defenseAllayers];
+    const player = players.find(p => p.id === routeStartPlayerId);
+    if (player) {
+      const routes = currentMode === 'defense' ? defenseRoutes : offenseRoutes;
+      routes.push({
+        playerId: routeStartPlayerId,
+        x1: player.x,
+        y1: player.y,
+        x2: Math.max(0, Math.min(550, x)),
+        y2: Math.max(0, Math.min(600, y)),
+        isDefense: player.isDefense
+      });
+      renderRoutes();
+      routeStartPlayerId = null;
+      infoDiv.textContent = 'Route drawn! Click a player to draw another route.';
+    }
+  }
 });
 
 // Escape key to cancel placement mode
@@ -658,9 +768,6 @@ document.getElementById('speed').addEventListener('input', (e) => {
 initializeEmptySetFormation();
 switchMode('offense');
 </script>
-
-</body>
-</html>
 
 </body>
 </html>
